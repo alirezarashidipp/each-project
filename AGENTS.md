@@ -86,6 +86,21 @@ Before finishing:
 - ensure secrets were not added
 - ensure generated files are intentional
 
+
+## Git Hooks
+
+Local Git hooks are used to enforce checks automatically.
+
+Before every push, the pre-push hook must run:
+
+./scripts/check.sh
+
+If the checks fail, the push must be blocked.
+
+Do not bypass Git hooks unless explicitly instructed.
+
+
+
 ## Do Not
 
 - Do not rewrite unrelated code.
