@@ -1,0 +1,9 @@
+۱. Define the goal — هدف مشخص: دقیقاً چه چیزی باید بهتر شود؟ مثلاً معرفی درست تو، آدرس صحیح سایت و نساختن اطلاعات شخصیِ نامعلوم. معیار قبولی را از ابتدا تعیین کن.
+۲. Try prompting — ابتدا پرامپت: بررسی کن مدل با دستور مناسب و چند مثال چقدر خوب عمل می‌کند؛ 
+۳. Prepare data — مثال‌های صحیح، متنوع و شبیه سؤال‌های واقعی بساز Train - Validation - Test 
+۴. Quality baseline —کیفیت قبل از آموزش
+۵. Performance baseline — سرعت و منابع
+6. Train and validate 
+۸. Final evaluation — new vs base
+۹. Save and reproduce 
+۱۰. Deploy and monitor.
