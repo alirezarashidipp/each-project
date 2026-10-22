@@ -1,0 +1,198 @@
+
+Option Explicit
+
+Sub BuildIncidentWorkflow()
+
+    Dim pres As Presentation
+    Dim s As Slide
+    Dim red As Long, navy As Long
+    Dim grey As Long, pale As Long
+    Dim green As Long, amber As Long
+    Dim white As Long
+
+    Set pres = ActivePresentation
+    pres.PageSetup.SlideWidth = 960
+    pres.PageSetup.SlideHeight = 540
+
+    Set s = pres.Slides.Add(pres.Slides.Count + 1, ppLayoutBlank)
+
+    red = RGB(219, 0, 17)
+    navy = RGB(35, 48, 66)
+    grey = RGB(110, 119, 131)
+    pale = RGB(245, 247, 250)
+    green = RGB(21, 128, 74)
+    amber = RGB(181, 105, 5)
+    white = RGB(255, 255, 255)
+
+    s.Background.Fill.ForeColor.RGB = white
+
+    ' Title
+    AddText s, "INCIDENT CLASSIFICATION & SUPPLIER ASSIGNMENT", _
+            32, 18, 900, 30, 22, navy, True
+
+    AddText s, "Two-stage human validation | HSBC / Supplier attribution", _
+            33, 51, 850, 22, 11, grey, False
+
+    ' HSBC brand line
+    Dim brand As Shape
+    Set brand = s.Shapes.AddShape(msoShapeRectangle, 32, 82, 896, 4)
+    brand.Fill.ForeColor.RGB = red
+    brand.Line.Visible = msoFalse
+
+    ' ----------------------------
+    ' Stage 1: Classification
+    ' ----------------------------
+
+    AddBox s, "01  INCIDENT INPUT" & vbCrLf & _
+              "New incident record", _
+              32, 132, 150, 83, navy, white
+
+    AddBox s, "02  LLM CLASSIFICATION" & vbCrLf & _
+              "Supplier - Company X" & vbCrLf & _
+              "HSBC - Internal" & vbCrLf & _
+              "I don't know", _
+              215, 117, 190, 113, red, white
+
+    AddArrow s, 182, 173, 215, 173, navy
+
+    ' Normal classification branch
+    AddBox s, "03  HITL REVIEW 1" & vbCrLf & _
+              "PENDING" & vbCrLf & _
+              "Agree / Change", _
+              445, 117, 180, 113, navy, white
+
+    AddArrow s, 405, 172, 445, 172, navy
+
+    ' Unknown classification branch
+    AddBox s, "MANUAL CLASSIFICATION" & vbCrLf & _
+              "Human determines outcome", _
+              214, 303, 193, 78, amber, white
+
+    AddText s, "I DON'T KNOW", _
+            226, 272, 170, 22, 11, amber, True
+
+    AddArrow s, 310, 230, 310, 302, amber
+
+    ' Manual classification joins approval
+    AddArrow s, 407, 340, 533, 340, navy
+    AddArrow s, 533, 340, 533, 230, navy
+
+    ' ----------------------------
+    ' Stage 2: Assignment
+    ' ----------------------------
+
+    AddBox s, "04  AUTO ASSIGNMENT" & vbCrLf & _
+              "Approved classification" & vbCrLf & _
+              "Supplier Master / Knowledge Base", _
+              660, 117, 265, 113, RGB(223, 233, 244), navy
+
+    AddArrow s, 625, 173, 660, 173, navy
+
+    ' Supplier linking note
+    AddText s, "Link incident to known supplier or HSBC", _
+            660, 237, 265, 35, 10, grey, False
+
+    ' HITL 2
+    AddBox s, "05  HITL REVIEW 2" & vbCrLf & _
+              "PENDING" & vbCrLf & _
+              "Agree / Disagree", _
+              660, 310, 265, 86, navy, white
+
+    AddArrow s, 792, 230, 792, 310, navy
+
+    ' Final confirmed path
+    AddBox s, "CONFIRMED ASSIGNMENT" & vbCrLf & _
+              "Final approved outcome", _
+              660, 442, 265, 66, green, white
+
+    AddArrow s, 792, 396, 792, 442, green
+
+    ' Manual assignment exception path
+    AddBox s, "MANUAL ASSIGNMENT" & vbCrLf & _
+              "Correct / reassign supplier", _
+              432, 442, 190, 66, amber, white
+
+    AddArrow s, 660, 353, 610, 353, amber
+    AddArrow s, 610, 353, 610, 442, amber
+
+    AddText s, "DISAGREE", 512, 405, 110, 20, 10, amber, True
+
+    ' Corrected manual assignment goes to final
+    AddArrow s, 622, 475, 660, 475, green
+
+    ' Legend
+    AddText s, "STATUS: Pending until reviewed  |  Manual paths require human decision", _
+            32, 520, 885, 15, 9, grey, False
+
+    MsgBox "HSBC workflow slide created successfully.", vbInformation
+
+End Sub
+
+
+Private Sub AddBox(ByVal s As Slide, ByVal caption As String, _
+                   ByVal x As Single, ByVal y As Single, _
+                   ByVal w As Single, ByVal h As Single, _
+                   ByVal bg As Long, ByVal fg As Long)
+
+    Dim sh As Shape
+
+    Set sh = s.Shapes.AddShape(msoShapeRoundedRectangle, x, y, w, h)
+
+    With sh
+        .Fill.ForeColor.RGB = bg
+        .Line.Visible = msoFalse
+
+        .TextFrame.TextRange.Text = caption
+        .TextFrame.TextRange.Font.Name = "Aptos"
+        .TextFrame.TextRange.Font.Size = 11
+        .TextFrame.TextRange.Font.Color.RGB = fg
+
+        .TextFrame.TextRange.ParagraphFormat.Alignment = ppAlignCenter
+        .TextFrame.VerticalAnchor = msoAnchorMiddle
+        .TextFrame.MarginLeft = 8
+        .TextFrame.MarginRight = 8
+        .TextFrame.MarginTop = 5
+        .TextFrame.MarginBottom = 5
+        .TextFrame.WordWrap = msoTrue
+    End With
+
+End Sub
+
+
+Private Sub AddText(ByVal s As Slide, ByVal caption As String, _
+                    ByVal x As Single, ByVal y As Single, _
+                    ByVal w As Single, ByVal h As Single, _
+                    ByVal fs As Single, ByVal fc As Long, _
+                    ByVal isBold As Boolean)
+
+    Dim sh As Shape
+
+    Set sh = s.Shapes.AddTextbox(msoTextOrientationHorizontal, x, y, w, h)
+
+    With sh.TextFrame.TextRange
+        .Text = caption
+        .Font.Name = "Aptos"
+        .Font.Size = fs
+        .Font.Color.RGB = fc
+        .Font.Bold = IIf(isBold, msoTrue, msoFalse)
+    End With
+
+End Sub
+
+
+Private Sub AddArrow(ByVal s As Slide, _
+                     ByVal x1 As Single, ByVal y1 As Single, _
+                     ByVal x2 As Single, ByVal y2 As Single, _
+                     ByVal clr As Long)
+
+    Dim sh As Shape
+
+    Set sh = s.Shapes.AddLine(x1, y1, x2, y2)
+
+    With sh.Line
+        .ForeColor.RGB = clr
+        .Weight = 2
+        .EndArrowheadStyle = msoArrowheadTriangle
+    End With
+
+End Sub
